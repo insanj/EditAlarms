@@ -2,28 +2,28 @@
 #import <UIKit/UIKit.h>
 #import "CydiaSubstrate.h"
 
-@interface TableViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>{
-    UITableView *_tableView;
-}
+@interface TableViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 @end
 
 @interface AlarmViewController : TableViewController
 -(void)showEditViewForRow:(long long)arg1;
 @end
 
-@interface AlarmTableViewCell : UITableViewCell{
-    id _alarmView;
-}
--(void)setEditing:(BOOL)arg1 animated:(BOOL)arg2;
--(void)setHighlighted:(BOOL)arg1 animated:(BOOL)arg2;
--(void)setSelected:(BOOL)arg1 animated:(BOOL)arg2;
-@end
-
-
 %hook AlarmViewController
+BOOL shouldIgnore;
+
 %new -(void)tappedCell:(UIButton *)sender{
-    [self showEditViewForRow:sender.tag];
+    UITableView *tableView = MSHookIvar<UITableView *>(self, "_tableView");
+    if(shouldIgnore)
+        shouldIgnore = NO;
+    else
+        [self showEditViewForRow:[tableView indexPathForCell:(UITableViewCell*)sender.superview.superview].row];
 }
+
+%new -(void)cancelCellTap{
+    shouldIgnore = YES;
+}
+
 
 -(id)tableView:(id)arg1 cellForRowAtIndexPath:(NSIndexPath *)arg2{
     UITableViewCell *original = %orig;
@@ -32,8 +32,8 @@
     [tap setFrame:original.frame];
     [tap setBackgroundColor:[UIColor clearColor]];
     [tap addTarget:self action:@selector(tappedCell:) forControlEvents:UIControlEventTouchUpInside];
+    [tap addTarget:self action:@selector(cancelCellTap) forControlEvents:UIControlEventTouchDragInside];
     [original addSubview:tap];
-    tap.tag = arg2.row;
 
     return original;
 }

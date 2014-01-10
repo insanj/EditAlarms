@@ -1,7 +1,7 @@
 _
-*.deb
 *.o
 .theos
 theos
 obj
 .DS_Store
+debs
