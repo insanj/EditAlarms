@@ -4,7 +4,7 @@ ARCHS = armv7 arm64
 include theos/makefiles/common.mk
 
 TWEAK_NAME = EditAlarms
-EditAlarms_FILES = Tweak.xm MSCMoreOptionTableViewCell/MSCMoreOptionTableViewCell.m
+EditAlarms_FILES = Tweak.xm
 EditAlarms_FRAMEWORKS = UIKit CoreMotion CoreGraphics QuartzCore Foundation
 EditAlarms_CFLAGS = -fobjc-arc
 
