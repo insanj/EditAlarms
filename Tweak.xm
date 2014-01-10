@@ -7,27 +7,39 @@
 }
 @end
 
-@interface EditAlarmViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
--(id)initWithAlarm:(id)arg1;    //returns some kind of dict
+@interface AlarmViewController : TableViewController
+-(void)showEditViewForRow:(long long)arg1;
 @end
 
-%hook TableViewController
--(TableViewController *)init{
-    TableViewController *original = %orig;
-    [original setEditing:YES animated:NO]; 
+@interface AlarmTableViewCell : UITableViewCell{
+    id _alarmView;
+}
+-(void)setEditing:(BOOL)arg1 animated:(BOOL)arg2;
+-(void)setHighlighted:(BOOL)arg1 animated:(BOOL)arg2;
+-(void)setSelected:(BOOL)arg1 animated:(BOOL)arg2;
+@end
+
+
+%hook AlarmViewController
+%new -(void)tappedCell:(UIButton *)sender{
+    [self showEditViewForRow:sender.tag];
+}
+
+-(id)tableView:(id)arg1 cellForRowAtIndexPath:(NSIndexPath *)arg2{
+    UITableViewCell *original = %orig;
+
+    UIButton *tap = [UIButton buttonWithType:UIButtonTypeCustom];
+    [tap setFrame:original.frame];
+    [tap setBackgroundColor:[UIColor clearColor]];
+    [tap addTarget:self action:@selector(tappedCell:) forControlEvents:UIControlEventTouchUpInside];
+    [original addSubview:tap];
+    tap.tag = arg2.row;
+
     return original;
 }
 
--(void)tableView:(id)arg1 willDisplayCell:(id)arg2 forRowAtIndexPath:(id)arg3{
-    UITableViewCell *modified = arg2;
-    modified.accessoryType = UITableViewCellAccessoryNone;
-    modified.editingAccessoryType = UITableViewCellAccessoryNone;
-    %orig(arg1, modified, arg3);
-}
-
 -(UIBarButtonItem *)editButtonItem{
-	//return nil;
-    return %orig;
+    return nil;
 }
 
 -(BOOL)tableView:(UITableView *)arg1 canEditRowAtIndexPath:(NSIndexPath *)arg2{
