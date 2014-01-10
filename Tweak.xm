@@ -29,7 +29,9 @@ BOOL shouldIgnore;
     UITableViewCell *original = %orig;
 
     UIButton *tap = [UIButton buttonWithType:UIButtonTypeCustom];
-    [tap setFrame:original.frame];
+    CGRect croppedFrame = original.frame;
+    croppedFrame.size.width /= 2.f;
+    [tap setFrame:croppedFrame];
     [tap setBackgroundColor:[UIColor clearColor]];
     [tap addTarget:self action:@selector(tappedCell:) forControlEvents:UIControlEventTouchUpInside];
     [tap addTarget:self action:@selector(cancelCellTap) forControlEvents:UIControlEventTouchDragInside];
