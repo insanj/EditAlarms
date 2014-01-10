@@ -2,7 +2,7 @@ Package: com.insanj.editalarms
 Name: Edit Alarms
 Pre-Depends: firmware (>= 7.0)
 Depends: mobilesubstrate
-Version: 1.0.1
+Version: 1.0.2
 Architecture: iphoneos-arm
 Description: Edit and delete alarms in-line.
  Tap to bring up edit sheet, swipe to delete.
