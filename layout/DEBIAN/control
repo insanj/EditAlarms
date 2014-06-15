@@ -9,3 +9,4 @@ Description: Edit and delete alarms in-line.
 Maintainer: Julian Weiss <me@insanj.com>
 Author: Julian (insanj) Weiss
 Section: Tweaks
+Icon: file:///Library/Application Support/EditAlarms/icon@2x.png
