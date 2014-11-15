@@ -23,7 +23,12 @@ static BOOL editAlarms_shouldIgnoreTaps;
     }
 
     else {
-        [self showEditViewForRow:[tableView indexPathForCell:(UITableViewCell *)sender.superview.superview].row];
+    	UIView *tappedCell = sender.superview;
+    	while (![tappedCell isKindOfClass:[UITableViewCell class]]) {
+    		tappedCell = tappedCell.superview;
+    	}
+
+        [self showEditViewForRow:[tableView indexPathForCell:(UITableViewCell *)tappedCell].row];
     }
 }
 
