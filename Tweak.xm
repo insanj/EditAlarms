@@ -1,54 +1,61 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "CydiaSubstrate.h"
+#import "substrate.h"
 
 @interface TableViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+
 @end
 
 @interface AlarmViewController : TableViewController
--(void)showEditViewForRow:(long long)arg1;
+
+- (void)showEditViewForRow:(long long)arg1;
+
 @end
 
 %hook AlarmViewController
-BOOL shouldIgnore;
+static BOOL editAlarms_shouldIgnoreTaps;
 
-%new -(void)tappedCell:(UIButton *)sender{
+%new - (void)editAlarmsButtonTapped:(UIButton *)sender {
     UITableView *tableView = MSHookIvar<UITableView *>(self, "_tableView");
-    if(shouldIgnore)
-        shouldIgnore = NO;
-    else
-        [self showEditViewForRow:[tableView indexPathForCell:(UITableViewCell*)sender.superview.superview].row];
+  
+    if (editAlarms_shouldIgnoreTaps) {
+        editAlarms_shouldIgnoreTaps = NO;
+    }
+
+    else {
+        [self showEditViewForRow:[tableView indexPathForCell:(UITableViewCell *)sender.superview.superview].row];
+    }
 }
 
-%new -(void)cancelCellTap{
-    shouldIgnore = YES;
+%new - (void)editAlarmsButtonCancelled:(UIButton *)sender {
+    editAlarms_shouldIgnoreTaps = YES;
 }
 
+- (id)tableView:(id)arg1 cellForRowAtIndexPath:(NSIndexPath *)arg2 {
+    UITableViewCell *cell = %orig;
 
--(id)tableView:(id)arg1 cellForRowAtIndexPath:(NSIndexPath *)arg2{
-    UITableViewCell *original = %orig;
+    CGRect editAlarmsButtonFrame = cell.frame;
+    editAlarmsButtonFrame.size.width /= 2.0;
 
-    UIButton *tap = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGRect croppedFrame = original.frame;
-    croppedFrame.size.width /= 2.f;
-    [tap setFrame:croppedFrame];
-    [tap setBackgroundColor:[UIColor clearColor]];
-    [tap addTarget:self action:@selector(tappedCell:) forControlEvents:UIControlEventTouchUpInside];
-    [tap addTarget:self action:@selector(cancelCellTap) forControlEvents:UIControlEventTouchDragInside];
-    [original addSubview:tap];
+    UIButton *editAlarmsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    editAlarmsButton.frame = editAlarmsButtonFrame;
+    editAlarmsButton.backgroundColor = [UIColor clearColor];
+    [editAlarmsButton addTarget:self action:@selector(editAlarmsButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    [editAlarmsButton addTarget:self action:@selector(editAlarmsButtonCancelled:) forControlEvents:UIControlEventTouchDragInside];
+    [cell addSubview:editAlarmsButton];
 
-    return original;
+    return cell;
 }
 
--(UIBarButtonItem *)editButtonItem{
+- (UIBarButtonItem *)editButtonItem {
     return nil;
 }
 
--(BOOL)tableView:(UITableView *)arg1 canEditRowAtIndexPath:(NSIndexPath *)arg2{
+- (BOOL)tableView:(UITableView *)arg1 canEditRowAtIndexPath:(NSIndexPath *)arg2 {
 	return YES;
 }
 
--(UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
     return UITableViewCellEditingStyleDelete;
 }
 

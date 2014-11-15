@@ -6,10 +6,10 @@ include theos/makefiles/common.mk
 
 TWEAK_NAME = EditAlarms
 EditAlarms_FILES = Tweak.xm
-EditAlarms_FRAMEWORKS = UIKit CoreMotion CoreGraphics QuartzCore Foundation
-EditAlarms_CFLAGS = -fobjc-arc
+EditAlarms_FRAMEWORKS = Foundation UIKit 
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 internal-after-install::
-	install.exec "killall -9 backboardd"
+	install.exec "killall -9 MobileTimer"
+	
